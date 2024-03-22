@@ -1,0 +1,120 @@
+.home-container {
+    font-family: 'Arial', sans-serif; // Change to match your design
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    color: #333;
+    background-color: #fff;
+  
+    header {
+      background-color: #0275d8; // Adjust color based on your brand
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      // Add logo and menu icons styles
+    }
+  
+    .welcome-section {
+      padding: 1.5rem;
+      background-color: #f0f0f0; // Adjust color based on your brand
+  
+      h1 {
+        font-size: 1.2rem;
+        color: #333;
+        margin-bottom: 0.5rem;
+      }
+  
+      p {
+        font-size: 0.9rem;
+        color: #666;
+      }
+    }
+  
+    .services-section {
+      // Assuming you have a carousel here
+      margin: 1rem 0;
+      // Add your carousel styles
+  
+      h2 {
+        text-align: center;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+      }
+  
+      // Styles for carousel images and navigation
+    }
+  
+    .actions {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+  
+      .button {
+        background-color: #5cb85c; // Adjust color based on your design
+        color: #fff;
+        border: none;
+        border-radius: 20px;
+        padding: 0.8rem;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        cursor: pointer;
+  
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+  
+      .secondary-action {
+        text-align: center;
+        margin-top: 2rem;
+  
+        button {
+          background-color: #5bc0de; // Adjust color based on your design
+          // Rest of the button styles are inherited
+        }
+  
+        p {
+          font-size: 0.8rem;
+          color: #333;
+          margin: 1rem 0;
+        }
+  
+        .divider {
+          font-size: 0.9rem;
+          color: #333;
+          margin: 1rem 0;
+        }
+      }
+    }
+  }
+  
+  // Responsive design for iPhone 14
+  @media (max-width: 430px) {
+    .home-container {
+      // Adjustments for smaller screens if necessary
+    }
+  
+    // Styles for the header (logo, menu icons) if they change on mobile
+    header {
+      // Your responsive header styles here
+    }
+  
+    .welcome-section {
+      // Your responsive welcome section styles here
+    }
+  
+    .services-section {
+      // Your responsive services section styles here
+    }
+  
+    .actions {
+      .button {
+        // Your responsive button styles here
+      }
+    }
+  }
+  

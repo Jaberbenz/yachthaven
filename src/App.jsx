@@ -126,14 +126,44 @@ function App() {
 
   return (
     <div className="App">
+      <div className="home-container">
+        <header className="home-header">
+          <span className="menu"><span class="material-symbols-outlined">menu</span></span>
+          <span className="logo">YH</span>
+          <span className="connexion"><span class="material-symbols-outlined">account_circle</span></span>
+        </header>
+        <main className="home-main">
+          <section className="welcome-section">
+            <h1>BIENVENUE SUR YACHTHAVEN</h1>
+            <p>Ad amet irure officia laboris anim eu consequat. Ex ipsum excepteur sint sint voluptate laboris aute sunt Lorem sint sit aute. Deserunt consectetur voluptate est eu culpa ut exercitation. Pariatur reprehenderit aliqua anim tempor officia proident voluptate magna minim cupidatat in ad aliqua cillum. Elit adipisicing dolore non tempor. Elit tempor non in do adipisicing in aute commodo reprehenderit labore officia.</p>          </section>
+          <section className="services-section">
+            <h2>NOS SERVICES</h2>
+            <div className="services-carousel">
+              <button className="carousel-button" aria-label="Previous slide"><span class="material-symbols-outlined">chevron_left</span></button>
+              <div className="carousel-image-placeholder">
+                {/* This will be your red card */}
+              </div>
+              <button className="carousel-button" aria-label="Next slide"><span class="material-symbols-outlined">chevron_right</span></button>
+            </div>
+
+          </section>
+          <div className="actions">
+            <button className="btn-reserve">RESERVER</button>
+          </div>
+        </main>
+      </div>
       {!userType && (
-        <div>
-          <h1>Bienvenue ! Veuillez choisir votre type dinscription :</h1>
-          <button onClick={() => setUserType("client")}>Client</button>
-          <button onClick={() => setUserType("prestataire")}>
-            Prestataire
-          </button>
+        <div className="signup-container">
+        <h3 className="signup-title">NOUVEAU CHEZ YACHTHAVEN ?</h3>
+        <p className="signup-subtitle">INSCRIVEZ-VOUS EN TANT QUE</p>
+        <button className="signup-button client" onClick={() => setUserType("client")}>Client</button>
+        <div className="divider">
+          <hr className="divider-line" />
+          <span className="divider-text">OU</span>
         </div>
+        <button className="signup-button prestataire" onClick={() => setUserType("prestataire")}>Prestataire</button>
+      </div>
+      
       )}
 
       {userType === "client" && (

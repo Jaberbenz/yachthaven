@@ -6,3 +6,245 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+.home-container {
+  font-family: 'montserrat', sans-serif; // Change to match your design
+  display: flex;
+  flex-direction: column;
+  color: #ffffff;
+  font-weight: 700;
+  background-color: #fff;
+
+  header {
+    background-color: #11457B; // Adjust color based on your brand
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    // Add logo and menu icons styles
+  }
+
+  .welcome-section {
+    padding: 1.5rem;
+    text-align: center;
+
+    h1 {
+      font-size: 1.2rem;
+      color: #333;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      font-size: 0.9rem;
+      color: #666;
+      font-weight: 400;
+    }
+  }
+
+  .services-section {
+    // Assuming you have a carousel here
+    margin: 1rem 0;
+    // Add your carousel styles
+
+    h2 {
+      text-align: center;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      color: black;
+    }
+
+    // Styles for carousel images and navigation
+  }
+
+  .actions {
+    padding-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    margin: auto;
+
+    .btn-reserve {
+      background-color: #FFD700; // Mustard/gold color, adjust as needed
+      color: #11457B; // Text color, assuming black based on the image
+      padding: 10px 20px; // Adjust padding as needed for size
+      border: none; // No border for this style
+      border-radius: 10px; // Fully rounded edges, adjust as needed
+      font-weight: bold; // Bold text
+      font-size: 1rem; // Adjust as needed
+      text-transform: uppercase; // Uppercase text
+      cursor: pointer; // Hand cursor on hover
+      transition: background-color 0.3s, transform 0.1s; // Smooth background color transition and slight transform on click
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); // Example shadow, adjust as needed
+
+      
+      &:hover {
+        background-color: darken(#FFD700, 10%);
+        color: #494949; // Slightly darker on hover
+      }
+    
+      &:active {
+        transform: scale(0.98); // Slightly shrink when clicked
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); // Example shadow, adjust as needed
+
+      }
+    }
+    
+
+    .secondary-action {
+      text-align: center;
+      margin-top: 2rem;
+
+      button {
+        background-color: #11457B; // Adjust color based on your design
+        // Rest of the button styles are inherited
+      }
+
+      p {
+        font-size: 0.8rem;
+        color: #333;
+        margin: 1rem 0;
+      }
+
+      .divider {
+        font-size: 0.9rem;
+        color: #333;
+        margin: 1rem 0;
+      }
+    }
+  }
+}
+
+.services-carousel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 15px;
+  padding: 10px 0;
+
+  .carousel-button {
+    border: none;
+    background-color: #11457B;
+    color: white;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    
+    &:hover {
+      background-color: darken(#0275d8, 10%); // Darken on hover
+    }
+  }
+
+  .carousel-image-placeholder {
+    flex-grow: 1; // Allow the placeholder to take up available space
+    margin: 0 10px; // Space around the placeholder
+    background-color: #646464; // Red placeholder for images
+    height: 300px; // Example height, adjust as necessary
+    width: 90%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); // Example shadow, adjust as needed
+  }
+}
+
+    
+    // If using icons, you can style them here
+    .icon {
+      // Icon styles
+    }
+
+    .signup-container {
+      text-align: center;
+      margin-top: 2rem;
+    }
+    
+    .signup-title {
+      font-size: 1.5rem;
+      color: #000;
+      margin-bottom: 0.5rem;
+    }
+    
+    .signup-subtitle {
+      font-size: 1rem;
+      color: #000;
+      margin-bottom: 1rem;
+    }
+    
+    .signup-button {
+      background-color: #0056b3;
+      color: #fff;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 1rem;
+      margin: 0.5rem 0;
+      cursor: pointer;
+      transition: background-color 0.3s, box-shadow 0.3s;
+      min-width: 150px; // Adjust this value to suit your design
+  display: inline-block; // This allows the width to be set
+    
+      &.client {
+        // Additional styles specifically for client button
+      }
+    
+      &.prestataire {
+        // Additional styles specifically for prestataire button
+      }
+    
+      &:hover {
+        background-color: darken(#0056b3, 10%);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+      }
+    
+      &:active {
+        border-color: #333;
+      }
+    }
+    
+    .divider {
+      position: relative;
+      margin: 2rem 0;
+    
+      .divider-line {
+        border: none;
+        height: 1px;
+        background-color: #ccc;
+        margin-right: 12px;
+    margin-left: 12px;
+      }
+    
+      .divider-text {
+        background-color: #fff;
+        padding: 0 1rem;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #ccc;
+        font-weight: bold;
+      }
+    }
+    
+
+// Responsive design for iPhone 14
+@media (max-width: 430px) {
+  .home-container {
+    // Adjustments for smaller screens if necessary
+  }
+
+  // Styles for the header (logo, menu icons) if they change on mobile
+  header {
+    // Your responsive header styles here
+  }
+
+  .welcome-section {
+    // Your responsive welcome section styles here
+  }
+
+  .services-section {
+    // Your responsive services section styles here
+  }
+
+  .actions {
+    .button {
+      // Your responsive button styles here
+    }
+  }
+}
