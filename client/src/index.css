@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+input[type="text"],
+input[type="password"],
+input[type="number"],
+input[type="email"],
+textarea {
+  @apply w-full border mt-1 mb-8 py-2 px-3 rounded-lg;
+}
+
+button{
+  @apply p-3 rounded-lg;
+}
+
+button.primary{
+  @apply bg-primary w-full text-white;
+}
+
+button.secondary{
+  @apply bg-white w-full text-primary border border-primary;
+}
+
+label {
+  @apply font-bold font-sans;
+}
+
+.slick-prev:before,
+.slick-next:before {
+  display: none; /* Masque les flèches par défaut */
+}
