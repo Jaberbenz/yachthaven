@@ -24,7 +24,7 @@ app.use("/uploads", express.static(__dirname + "/uploads"));
 app.use(
   cors({
     credentials: true,
-    origin: ["https://yachthaven-front.vercel.app"],
+    origin: ["https://yachthaven-front.vercel.app", "http://localhost:5173"],
     methods: ["POST", "GET"],
   })
 );
