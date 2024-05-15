@@ -25,7 +25,7 @@ app.use(
   cors({
     credentials: true,
     origin: ["https://yachthaven-front.vercel.app", "http://localhost:5173"],
-    methods: ["POST", "GET"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
 
