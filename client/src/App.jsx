@@ -18,7 +18,9 @@ import ReservationPage from "./pages/ReservationPage.jsx";
 import ReservationsPage from "./pages/ReservationsPage.jsx";
 import EditProfile from "./pages/UpdateClient.jsx";
 
-axios.defaults.baseURL = "http://localhost:4000";
+import process from "process";
+
+axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 axios.defaults.withCredentials = true;
 
 function App() {
