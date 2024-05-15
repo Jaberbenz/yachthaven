@@ -10,6 +10,7 @@ const prestationSchema = new mongoose.Schema({
   extraInfo: String,
   maxGuests: Number,
   prix: Number,
+  categorie: String,
   disponibilities: [
     {
       jour: String,

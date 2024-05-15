@@ -10,28 +10,28 @@ export default function ClientAccountPage() {
   const { ready, user, setUser } = useContext(UserContext);
   let { subpage } = useParams();
 
-  useEffect(() => {
-    // Get user data from localStorage if it's not already in state
-    if (!user || !user.email) {
-      const storedUser = JSON.parse(localStorage.getItem("user"));
-      if (storedUser && storedUser.email) {
-        setUser(storedUser);
-      }
-    } else {
-      const fetchData = async () => {
-        try {
-          const response = await axios.get(`/client/${user.email}`);
-          setUser(response.data); // Update user context with fetched data
-          // Also store user data in localStorage
-          localStorage.setItem("user", JSON.stringify(response.data));
-        } catch (error) {
-          console.error("Failed to fetch user data", error);
-        }
-      };
+  const [dataLoaded, setDataLoaded] = useState(false);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const encodedEmail = encodeURIComponent(user.email);
+        const response = await axios.get(`/client/${encodedEmail}`);
+        if (response.data) {
+          setUser(response.data); // Update user context with fetched data
+          localStorage.setItem("user", JSON.stringify(response.data));
+          setDataLoaded(true); // Set dataLoaded to true after data is fetched
+        }
+      } catch (error) {
+        console.error("Failed to fetch user data", error);
+      }
+    };
+
+    if (user && user.email && !dataLoaded) {
+      // Only fetch data if it hasn't been loaded yet
       fetchData();
     }
-  }, [user, setUser]);
+  }, [user, dataLoaded]); // Include 'user' and 'dataLoaded' in the dependency arrayInclude 'setUser' and 'user' in the dependency array
 
   if (subpage === undefined) {
     subpage = "profile";
@@ -61,25 +61,71 @@ export default function ClientAccountPage() {
     <div>
       <ClientAccountNav />
       {subpage === "profile" && (
-        <div className="max-w-xs mx-auto text-xl text-center">
-          <div>Logged in as {user.nom}</div>
-          <div>Email: {user.email}</div>
-          <div>First Name: {user.prenom}</div>
-          <div>Phone Number: {user.numeroTel} </div>
-          <div>Role: {user.role}</div>
-          <Link to={`/account-client/update/${user._id}`}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="w-6 h-6"
-            >
-              <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32L19.513 8.2Z" />
-            </svg>
-          </Link>
-          <button onClick={logout} className="max-w-sm mt-2 font-bold primary">
-            Logout
-          </button>
+        <div className="w-full max-w-sm p-6 mt-8 bg-white shadow-xl rounded-2xl h-4/5">
+          <div className="flex flex-col items-center justify-between h-full">
+            <div>
+              <img
+                src={user.avatarUrl || "../../public/default_avatar.png"}
+                alt="User avatar"
+                className="w-32 h-32 mb-4 rounded-full"
+              />
+              <h1 className="text-2xl font-bold text-gray-900">{user.nom}</h1>
+              <p className="text-blue-600">{user.role}</p>
+            </div>
+            <ul className="my-4 space-y-2">
+              <li>
+                <strong>Email:</strong> {user.email}
+              </li>
+              <li>
+                <strong>First Name:</strong> {user.prenom}
+              </li>
+              <li>
+                <strong>Phone:</strong> {user.numeroTel}
+              </li>
+            </ul>
+            <div className="flex justify-between w-full">
+              <Link
+                to={`/account-client/update/${user._id}`}
+                className="flex items-center text-blue-600 hover:text-blue-800"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  className="w-6 h-6 mr-2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 114.95 0 2.5 2.5 0 010 4.95L12 21H3v-9l12.232-12.232z"
+                  />
+                </svg>
+                Edit
+              </Link>
+              <button
+                onClick={() => logout()}
+                className="flex items-center text-red-600 hover:text-red-800"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  className="w-6 h-6 mr-2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
+                </svg>
+                Logout
+              </button>
+            </div>
+          </div>
         </div>
       )}
       {subpage === "services" && <ReservationsPage />}

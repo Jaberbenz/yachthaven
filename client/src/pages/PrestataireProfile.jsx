@@ -1,6 +1,6 @@
 import axios from "axios";
-import { useContext, useState } from "react";
-import { Navigate, useParams } from "react-router-dom";
+import { useContext, useState, useEffect } from "react";
+import { Link, Navigate, useParams } from "react-router-dom";
 import PrestataireAccountNav from "../PrestataireAccountNav";
 import { UserContext } from "../UserContext";
 import PrestationsPage from "./PrestationsPage";
@@ -8,6 +8,29 @@ import PrestationsPage from "./PrestationsPage";
 export default function PrestataireProfilePage() {
   const [redirect, setRedirect] = useState(null);
   const { ready, user, setUser } = useContext(UserContext);
+
+  const [dataLoaded, setDataLoaded] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const encodedEmail = encodeURIComponent(user.email);
+        const response = await axios.get(`/prestataire/${encodedEmail}`);
+        if (response.data) {
+          setUser(response.data); // Update user context with fetched data
+          localStorage.setItem("user", JSON.stringify(response.data));
+          setDataLoaded(true); // Set dataLoaded to true after data is fetched
+        }
+      } catch (error) {
+        console.error("Failed to fetch user data", error);
+      }
+    };
+
+    if (user && user.email && !dataLoaded) {
+      // Only fetch data if it hasn't been loaded yet
+      fetchData();
+    }
+  }, [user, dataLoaded]);
 
   let { subpage } = useParams();
   if (subpage === undefined) {
@@ -38,15 +61,70 @@ export default function PrestataireProfilePage() {
     <div>
       <PrestataireAccountNav />
       {subpage === "profile" && (
-        <div>
-          <div className="max-w-xs mx-auto text-xl text-center">
-            Logged in as {user.nom} ({user.email}) <br />
-            <button
-              onClick={logout}
-              className="max-w-sm mt-2 font-bold primary"
-            >
-              logout
-            </button>
+        <div className="w-full max-w-sm p-6 mt-8 bg-white shadow-xl rounded-2xl h-4/5">
+          <div className="flex flex-col items-center justify-between h-full">
+            <div>
+              <img
+                src={user.avatarUrl || "../../public/default_avatar.png"}
+                alt="User avatar"
+                className="w-32 h-32 mb-4 rounded-full"
+              />
+              <h1 className="text-2xl font-bold text-gray-900">{user.nom}</h1>
+              <p className="text-blue-600">{user.role}</p>
+            </div>
+            <ul className="my-4 space-y-2">
+              <li>
+                <strong>Email:</strong> {user.email}
+              </li>
+              <li>
+                <strong>First Name:</strong> {user.prenom}
+              </li>
+              <li>
+                <strong>Phone:</strong> {user.numeroTel}
+              </li>
+            </ul>
+            <div className="flex justify-between w-full">
+              <Link
+                to={`/account-client/update/${user._id}`}
+                className="flex items-center text-blue-600 hover:text-blue-800"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  className="w-6 h-6 mr-2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 114.95 0 2.5 2.5 0 010 4.95L12 21H3v-9l12.232-12.232z"
+                  />
+                </svg>
+                Edit
+              </Link>
+              <button
+                onClick={() => logout()}
+                className="flex items-center text-red-600 hover:text-red-800"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  className="w-6 h-6 mr-2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
+                </svg>
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       )}

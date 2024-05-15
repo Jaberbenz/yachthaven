@@ -387,12 +387,16 @@ app.get("/prestataire/:id", async (req, res) => {
   }
 });
 
-app.get("/client/:id", async (req, res) => {
+app.get("/client/:mail", async (req, res) => {
+  console.log("API endpoint called with mail:", req.params.mail);
+  const { mail } = req.params;
+  const decodedMail = decodeURIComponent(mail);
+  console.log("Decoded email:", decodedMail); // Log the decoded email
+
   try {
-    const { id } = req.params;
-    const client = await Client.findById(id);
+    const client = await Client.findOne({ email: decodedMail });
     if (!client) {
-      console.log("Client not found for ID:", id);
+      console.log("Client not found for email:", decodedMail);
       return res.status(404).json({ message: "Client not found" });
     }
     res.json(client);
@@ -405,7 +409,7 @@ app.get("/client/:id", async (req, res) => {
 app.put("/client/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { nom, email, prenom, numeroTel, role } = req.body;
+    const { nom, email, prenom, numeroTel } = req.body;
 
     await Client.findByIdAndUpdate(
       { _id: id },
@@ -414,7 +418,47 @@ app.put("/client/:id", async (req, res) => {
         email,
         prenom,
         numeroTel,
-        role,
+      }
+    );
+
+    res.status(200).json({ message: "Client updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+app.get("/prestataire/:mail", async (req, res) => {
+  console.log("API endpoint called with mail:", req.params.mail);
+  const { mail } = req.params;
+  const decodedMail = decodeURIComponent(mail);
+  console.log("Decoded email:", decodedMail); // Log the decoded email
+
+  try {
+    const client = await Client.findOne({ email: decodedMail });
+    if (!client) {
+      console.log("Client not found for email:", decodedMail);
+      return res.status(404).json({ message: "Client not found" });
+    }
+    res.json(client);
+  } catch (error) {
+    console.error("Error in fetching client:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+app.put("/prestataire/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nom, email, prenom, numeroTel, adresse } = req.body;
+
+    await Client.findByIdAndUpdate(
+      { _id: id },
+      {
+        nom,
+        email,
+        prenom,
+        numeroTel,
+        adresse,
       }
     );
 

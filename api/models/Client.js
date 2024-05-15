@@ -8,6 +8,7 @@ const ClientSchema = new mongoose.Schema({
     password: String,
     numeroTel: String,
     role: String,
+    photo: String
 });
 
 

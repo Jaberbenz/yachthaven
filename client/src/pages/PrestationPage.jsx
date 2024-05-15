@@ -118,7 +118,7 @@ export default function PrestationPage() {
 
   return (
     <div className="p-5 mx-4 mt-4 bg-gray-200 rounded-2xl ">
-      <h1 className="text-2xl">{prestation.titre}</h1>
+      <h1 className="text-2xl font-semibold text-center">{prestation.titre}</h1>
       <a
         className="flex gap-1 my-4 font-semibold underline"
         target="_blank"

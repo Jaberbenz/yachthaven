@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
-const EditProfile = () => {
+const EditProfilePres = () => {
   const { id } = useParams();
   const [client, setClient] = useState({
     nom: "",
@@ -13,7 +13,7 @@ const EditProfile = () => {
 
   useEffect(() => {
     const fetchClient = async () => {
-      const res = await axios.get(`/client/${id}`);
+      const res = await axios.get(`/prestataire/${id}`);
       console.log(res.data);
       setClient(res.data);
     };
@@ -27,7 +27,7 @@ const EditProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axios.put(`/client/${id}`, client);
+    await axios.put(`/prestataire/${id}`, client);
   };
 
   return (
@@ -73,4 +73,4 @@ const EditProfile = () => {
   );
 };
 
-export default EditProfile;
+export default EditProfilePres;
