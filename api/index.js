@@ -133,6 +133,7 @@ app.post("/login", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
 app.get("/profile", (req, res) => {
   const { token } = req.cookies;
 
@@ -347,7 +348,6 @@ app.put("/prestation", async (req, res) => {
 
 app.get("/allprestations", async (req, res) => {
   const prestations = await Prestation.find();
-  console.log(`Returned ${prestations.length} prestations`);
   res.json(prestations);
 });
 
@@ -406,40 +406,6 @@ app.get("/bookings", async (req, res) => {
   }
 });
 
-// app.get("/prestataire/:id", async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const prestataire = await Prestataire.findById(id);
-//     if (!prestataire) {
-//       console.log("Prestataire not found for ID:", id);
-//       return res.status(404).json({ message: "Prestataire not found" });
-//     }
-//     res.json(prestataire);
-//   } catch (error) {
-//     console.error("Error in fetching prestataire:", error);
-//     res.status(500).json({ message: "Server error" });
-//   }
-// });
-
-// app.get("/client/:mail", async (req, res) => {
-//   console.log("API endpoint called with mail:", req.params.mail);
-//   const { mail } = req.params;
-//   const decodedMail = decodeURIComponent(mail);
-//   console.log("Decoded email:", decodedMail); // Log the decoded email
-
-//   try {
-//     const client = await Client.findOne({ email: decodedMail });
-//     if (!client) {
-//       console.log("Client not found for email:", decodedMail);
-//       return res.status(404).json({ message: "Client not found" });
-//     }
-//     res.json(client);
-//   } catch (error) {
-//     console.error("Error in fetching client:", error);
-//     res.status(500).json({ message: "Server error" });
-//   }
-// });
-
 app.put("/client/:id", upload.single("photo"), async (req, res) => {
   try {
     const { id } = req.params;
@@ -479,25 +445,6 @@ app.put("/client/:id", upload.single("photo"), async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
-// app.get("/prestataire/:mail", async (req, res) => {
-//   console.log("API endpoint called with mail:", req.params.mail);
-//   const { mail } = req.params;
-//   const decodedMail = decodeURIComponent(mail);
-//   console.log("Decoded email:", decodedMail); // Log the decoded email
-
-//   try {
-//     const prestataire = await Prestataire.findOne({ email: decodedMail });
-//     if (!prestataire) {
-//       console.log("Prestataire not found for email:", decodedMail);
-//       return res.status(404).json({ message: "Client not found" });
-//     }
-//     res.json(prestataire);
-//   } catch (error) {
-//     console.error("Error in fetching prestataire:", error);
-//     res.status(500).json({ message: "Server error" });
-//   }
-// });
 
 app.put("/prestataire/:id", upload.single("photo"), async (req, res) => {
   try {
@@ -562,6 +509,96 @@ app.get("/booking/:id", async (req, res) => {
   } catch (err) {
     console.error("Error fetching booking details:", err);
     res.status(500).send(err.message);
+  }
+});
+
+app.get("/prestations-by-booking/:bookingId", async (req, res) => {
+  try {
+    // Récupérer la réservation à partir de l'ID de réservation fourni
+    const booking = await Booking.findById(req.params.bookingId).populate(
+      "prestation"
+    );
+
+    // Vérifier si la réservation existe
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    // Récupérer l'ID du propriétaire (owner) de la prestation réservée
+    const ownerId = booking.prestation.owner;
+
+    // Trouver toutes les prestations ayant le même propriétaire (owner) sauf celle déjà réservée
+    const prestations = await Prestation.find({
+      owner: ownerId,
+      _id: { $ne: booking.prestation._id },
+    });
+
+    // Vérifier si des prestations existent pour ce propriétaire
+    if (!prestations || prestations.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No prestations found for this owner" });
+    }
+
+    // Retourner les prestations trouvées
+    res.json(prestations);
+  } catch (error) {
+    // Gérer les erreurs et retourner un message d'erreur au client
+    console.error("Error fetching prestations by booking:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+app.get("/upcoming-bookings/:prestataireId", async (req, res) => {
+  try {
+    const { prestataireId } = req.params;
+    const today = new Date();
+
+    // Récupérer les prestations appartenant au prestataire
+    const prestations = await Prestation.find({ owner: prestataireId });
+
+    if (prestations.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "Aucune prestation trouvée pour ce prestataire" });
+    }
+
+    // Extraire les IDs des prestations
+    const prestationIds = prestations.map((p) => p._id);
+
+    // Récupérer toutes les réservations futures pour les prestations du prestataire
+    const upcomingBookings = await Booking.find({
+      prestation: { $in: prestationIds },
+      date: { $gte: today },
+    }).populate("prestation");
+
+    if (upcomingBookings.length === 0) {
+      return res.status(404).json({
+        message: "Aucune réservation à venir trouvée pour ce prestataire",
+      });
+    }
+
+    res.json(upcomingBookings);
+  } catch (error) {
+    console.error("Error fetching upcoming bookings:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+app.get("/prestation/:prestationId", async (req, res) => {
+  const { prestationId } = req.params;
+
+  try {
+    const prestation = await Prestation.findById(prestationId);
+
+    if (!prestation) {
+      return res.status(404).json({ message: "Prestation not found" });
+    }
+
+    res.json(prestation);
+  } catch (error) {
+    console.error("Error fetching prestation:", error);
+    res.status(500).json({ message: "Server error" });
   }
 });
 

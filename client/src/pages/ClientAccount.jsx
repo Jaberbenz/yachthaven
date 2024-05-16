@@ -42,7 +42,7 @@ export default function ClientAccountPage() {
           <div className="flex flex-col items-center justify-between h-full">
             <div>
               <img
-                src={user.photo ? `/${user.photo}` : "/default_avatar.png"}
+                src="/pro.png"
                 alt="User avatar"
                 className="w-32 h-32 mb-4 rounded-full"
               />
