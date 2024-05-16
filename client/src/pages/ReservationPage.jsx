@@ -10,19 +10,20 @@ export default function ReservationPage() {
   const [showAllPhotos, setShowAllPhotos] = useState(false);
 
   useEffect(() => {
-    // Fonction pour récupérer les détails de la prestation
     const fetchPrestationDetails = async () => {
       try {
         const response = await axios.get(`/booking/${id}`);
         setPrestation(response.data);
         setLoading(false);
       } catch (err) {
+        console.error("Error fetching prestation data:", err.message);
         setError(err.message);
         setLoading(false);
       }
     };
+
     fetchPrestationDetails();
-  }, [id]); // Exécutez l'effet lorsque l'ID change
+  }, [id]); // Ensure bookingId is in your dependency array if it might change
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -65,7 +66,7 @@ export default function ReservationPage() {
   console.log(prestation);
 
   return (
-    <div className="p-5 mx-4 mt-4 bg-gray-200 rounded-2xl">
+    <div className="p-5 mx-4 mt-4 bg-gray-200 border border-gray-200 shadow-lg rounded-2xl">
       <h1 className="text-2xl font-semibold text-center">{prestation.titre}</h1>
       <a
         className="flex gap-1 my-4 font-semibold text-center underline"
@@ -133,8 +134,30 @@ export default function ReservationPage() {
         </button>
       </div>
       <div className="my-4">
-        <h2 className="text-2xl font-semibold">Description</h2>
+        <h2 className="text-2xl font-semibold text-center">Description</h2>
         {prestation.description}
+      </div>
+      <div className="max-w-2xl px-6 py-8 mx-auto mt-6 bg-white rounded-lg shadow-md">
+        {/* Information card */}
+        <div className="text-center">
+          <h3 className="mb-4 text-xl font-semibold text-gray-800">
+            Détails de la prestation
+          </h3>
+          <div className="space-y-3 text-gray-600">
+            <p>
+              <strong>Type de prestation:</strong> Restauration
+            </p>
+            <p>
+              <strong>Nombre de personnes:</strong> 5
+            </p>
+            <p>
+              <strong>Date:</strong> 14/05/2024
+            </p>
+            <p>
+              <strong>Horaires:</strong> 8:30 - 15:00
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

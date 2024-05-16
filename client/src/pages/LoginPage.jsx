@@ -14,6 +14,7 @@ export default function LoginPage() {
     try {
       const { data } = await axios.post("/login", { email, password });
       setUser(data);
+      console.log(data);
       alert("Login réussi");
 
       if (data.role === "client") {

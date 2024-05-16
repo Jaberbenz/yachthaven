@@ -1,5 +1,5 @@
+import { useContext, useState } from "react";
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import ClientAccountNav from "../ClientAccountNav";
 import { UserContext } from "../UserContext";
@@ -9,29 +9,6 @@ export default function ClientAccountPage() {
   const [redirect, setRedirect] = useState(null);
   const { ready, user, setUser } = useContext(UserContext);
   let { subpage } = useParams();
-
-  const [dataLoaded, setDataLoaded] = useState(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const encodedEmail = encodeURIComponent(user.email);
-        const response = await axios.get(`/client/${encodedEmail}`);
-        if (response.data) {
-          setUser(response.data); // Update user context with fetched data
-          localStorage.setItem("user", JSON.stringify(response.data));
-          setDataLoaded(true); // Set dataLoaded to true after data is fetched
-        }
-      } catch (error) {
-        console.error("Failed to fetch user data", error);
-      }
-    };
-
-    if (user && user.email && !dataLoaded) {
-      // Only fetch data if it hasn't been loaded yet
-      fetchData();
-    }
-  }, [user, dataLoaded]); // Include 'user' and 'dataLoaded' in the dependency arrayInclude 'setUser' and 'user' in the dependency array
 
   if (subpage === undefined) {
     subpage = "profile";
@@ -65,7 +42,7 @@ export default function ClientAccountPage() {
           <div className="flex flex-col items-center justify-between h-full">
             <div>
               <img
-                src={user.avatarUrl || "../../public/default_avatar.png"}
+                src={user.photo ? `/${user.photo}` : "/default_avatar.png"}
                 alt="User avatar"
                 className="w-32 h-32 mb-4 rounded-full"
               />

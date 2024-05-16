@@ -1,81 +1,86 @@
 import PropTypes from "prop-types";
 import { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../UserContext";
+import axios from "axios";
 
 export default function SideBar({ isOpen, onClose }) {
-  const { user } = useContext(UserContext);
+  const { ready, user, setUser } = useContext(UserContext);
   const [openCategory, setOpenCategory] = useState(null);
+  const navigate = useNavigate();
 
   const categories = {
     Destinations: ["Antibes", "Monaco", "Cannes", "Saint Tropez"],
-    Parcourir: [
-      "Restauration",
-      "Bien Être",
-      "Loisirs",
-      "Hôtellerie",
-      "Transport",
-    ],
+    Parcourir: ["Restauration", "Bien Être", "Loisirs", "Hôtellerie"],
     "About us": ["Qui sommes-nous?", "Nos missions", "Nos engagements"],
     Contact: ["saw@archtravels.com", "yachtavenue", "06.xxxxx"],
   };
 
   const toggleCategory = (category) => {
-    if (openCategory === category) {
-      setOpenCategory(null);
-    } else {
-      setOpenCategory(category);
+    setOpenCategory(openCategory === category ? null : category);
+  };
+
+  const logout = async () => {
+    try {
+      await axios.post("/logout");
+      setUser(null);
+      navigate("/"); // Redirect after logout
+      onClose(); // Close sidebar
+    } catch (error) {
+      console.error("Failed to logout:", error);
     }
   };
-  console.log(user);
 
-  const getContent = () => {
+  const renderUserContent = () => {
     if (user) {
-      console.log(user._id);
-      if (user.role === "client") {
-        return (
-          <div className="flex flex-col py-2 mx-2 my-4 space-y-2">
-            <Link to={`/account-client/${user._id}`}>
-              <button
-                className="my-2 font-sans font-bold primary"
-                onClick={onClose}
-              >
-                Mon Compte
-              </button>
-            </Link>
+      return user.role === "client" ? (
+        <div className="flex flex-col py-2 mx-2 my-4 space-y-2">
+          <Link to={`/account-client/${user._id}`}>
+            <button
+              className="my-2 font-sans font-bold primary"
+              onClick={onClose}
+            >
+              Mon Compte
+            </button>
+          </Link>
+          <button
+            className="my-2 font-sans font-bold secondary"
+            onClick={onClose}
+          >
+            Réserver un service
+          </button>
+        </div>
+      ) : (
+        <div className="flex flex-col py-2 mx-2 my-4 space-y-2">
+          <Link to={`/account-prestataire/${user._id}`}>
+            <button
+              className="my-2 font-sans font-bold primary"
+              onClick={onClose}
+            >
+              Mon Compte
+            </button>
+          </Link>
+          <Link to={"/account-prestataire/services/new"}>
             <button
               className="my-2 font-sans font-bold secondary"
               onClick={onClose}
             >
-              Réserver un service
+              Ajouter vos prestations
             </button>
-          </div>
-        );
-      } else if (user.role === "prestataire") {
-        return (
-          <div className="flex flex-col py-2 mx-2 my-4 space-y-2">
-            <Link to={`/account-prestataire/${user._id}`}>
-              <button
-                className="my-2 font-sans font-bold primary"
-                onClick={onClose}
-              >
-                Mon Compte
-              </button>
-            </Link>
-            <Link to={"/account-prestataire/services/new"}>
-              <button
-                className="my-2 font-sans font-bold secondary"
-                onClick={onClose}
-              >
-                Ajouter vos prestations
-              </button>
-            </Link>
-          </div>
-        );
-      }
+          </Link>
+        </div>
+      );
     }
+  };
 
-    // Pour les utilisateurs non connectés
+  const renderAuthButtons = () => {
+    if (user) {
+      return (
+        <button className="my-2 font-sans font-bold primary" onClick={logout}>
+          Se déconnecter
+        </button>
+      );
+    }
     return (
       <div className="flex flex-col py-2 mx-2 my-4 space-y-2">
         <Link to="/register">
@@ -118,14 +123,14 @@ export default function SideBar({ isOpen, onClose }) {
           />
         </svg>
       </button>
-      {getContent()}
+      {renderUserContent()}
       {Object.keys(categories).map((category, index) => (
         <div key={index}>
           <button
             className="flex items-center justify-between w-full py-6 text-left text-gray-700 hover:bg-gray-100 focus:outline-none"
             onClick={() => toggleCategory(category)}
           >
-            <span>{openCategory === category ? "+" : "-"}</span>
+            <span>{openCategory === category ? "-" : "+"}</span>
             <span>{category}</span>
           </button>
           <div
@@ -143,6 +148,7 @@ export default function SideBar({ isOpen, onClose }) {
           </div>
         </div>
       ))}
+      <div className="mx-2 mt-10">{renderAuthButtons()}</div>
     </div>
   );
 }
@@ -151,7 +157,3 @@ SideBar.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
 };
-
-// {!!user && user.role === "client" && <h2>SideBar client</h2>}
-
-// {!!user && user.role === "prestataire" && <h2>SideBar prestataire</h2>}

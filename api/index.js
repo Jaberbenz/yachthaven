@@ -14,6 +14,7 @@ require("dotenv").config();
 const app = express();
 const Booking = require("./models/Booking.js");
 const mongoUrl = process.env.MONGODB_URL;
+const upload = multer({ dest: "uploads/" });
 
 const bcryptSalt = bcrypt.genSaltSync(10);
 const jwtSecret = "fsfsfsfsfs";
@@ -98,37 +99,64 @@ app.post("/registerPrestataire", async (req, res) => {
 
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  const clientDoc = await Client.findOne({ email });
-  if (clientDoc) {
-    const passOk = bcrypt.compareSync(password, clientDoc.password);
-    if (passOk) {
-      jwt.sign(
-        {
-          email: clientDoc.email,
-          id: clientDoc._id,
-        },
-        jwtSecret,
-        {},
-        (err, token) => {
-          if (err) throw err;
-          res.cookie("token", token).json(clientDoc);
-        }
-      );
-    } else {
-      res.status(422).res.json("pass not ok");
+
+  try {
+    let userDoc = await Client.findOne({ email });
+    if (!userDoc) {
+      userDoc = await Prestataire.findOne({ email });
     }
-  } else {
-    res.json("not found");
+
+    if (userDoc) {
+      const passOk = bcrypt.compareSync(password, userDoc.password);
+      if (passOk) {
+        jwt.sign(
+          {
+            email: userDoc.email,
+            id: userDoc._id,
+            role: userDoc.role,
+          },
+          jwtSecret,
+          {},
+          (err, token) => {
+            if (err) throw err;
+            res.cookie("token", token).json(userDoc);
+          }
+        );
+      } else {
+        res.status(422).json("pass not ok");
+      }
+    } else {
+      res.status(404).json("not found");
+    }
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ message: error.message });
   }
 });
-
 app.get("/profile", (req, res) => {
   const { token } = req.cookies;
+
   if (token) {
     jwt.verify(token, jwtSecret, {}, async (err, userData) => {
       if (err) throw err;
-      const { nom, email, _id, role } = await Client.findById(userData.id);
-      res.json({ nom, email, _id, role });
+
+      const { email } = userData;
+
+      try {
+        let user = await Client.findOne({ email });
+        if (!user) {
+          user = await Prestataire.findOne({ email });
+        }
+
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+
+        res.json(user);
+      } catch (error) {
+        console.error("Error in fetching user:", error);
+        res.status(500).json({ message: "Server error" });
+      }
     });
   } else {
     res.json(null);
@@ -186,6 +214,7 @@ app.post("/prestation", (req, res) => {
       perks,
       extraInfo,
       maxInvite,
+      categorie,
       prix,
       disponibilities,
     } = req.body;
@@ -202,6 +231,7 @@ app.post("/prestation", (req, res) => {
         perks,
         extraInfo,
         maxInvite,
+        categorie,
         prix,
         disponibilities,
       });
@@ -263,6 +293,7 @@ app.put("/prestation", async (req, res) => {
       perks,
       extraInfo,
       maxGuests,
+      categorie,
       prix,
       disponibilities,
     } = req.body;
@@ -297,6 +328,7 @@ app.put("/prestation", async (req, res) => {
         perks,
         extraInfo,
         maxGuests,
+        categorie,
         prix,
         disponibilities: cleanedDisponibilities,
       });
@@ -314,7 +346,9 @@ app.put("/prestation", async (req, res) => {
 });
 
 app.get("/allprestations", async (req, res) => {
-  res.json(await Prestation.find());
+  const prestations = await Prestation.find();
+  console.log(`Returned ${prestations.length} prestations`);
+  res.json(prestations);
 });
 
 app.post("/prestationReservation", async (req, res) => {
@@ -372,99 +406,162 @@ app.get("/bookings", async (req, res) => {
   }
 });
 
-app.get("/prestataire/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const prestataire = await Prestataire.findById(id);
-    if (!prestataire) {
-      console.log("Prestataire not found for ID:", id);
-      return res.status(404).json({ message: "Prestataire not found" });
-    }
-    res.json(prestataire);
-  } catch (error) {
-    console.error("Error in fetching prestataire:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-});
+// app.get("/prestataire/:id", async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const prestataire = await Prestataire.findById(id);
+//     if (!prestataire) {
+//       console.log("Prestataire not found for ID:", id);
+//       return res.status(404).json({ message: "Prestataire not found" });
+//     }
+//     res.json(prestataire);
+//   } catch (error) {
+//     console.error("Error in fetching prestataire:", error);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
 
-app.get("/client/:mail", async (req, res) => {
-  console.log("API endpoint called with mail:", req.params.mail);
-  const { mail } = req.params;
-  const decodedMail = decodeURIComponent(mail);
-  console.log("Decoded email:", decodedMail); // Log the decoded email
+// app.get("/client/:mail", async (req, res) => {
+//   console.log("API endpoint called with mail:", req.params.mail);
+//   const { mail } = req.params;
+//   const decodedMail = decodeURIComponent(mail);
+//   console.log("Decoded email:", decodedMail); // Log the decoded email
 
-  try {
-    const client = await Client.findOne({ email: decodedMail });
-    if (!client) {
-      console.log("Client not found for email:", decodedMail);
-      return res.status(404).json({ message: "Client not found" });
-    }
-    res.json(client);
-  } catch (error) {
-    console.error("Error in fetching client:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-});
+//   try {
+//     const client = await Client.findOne({ email: decodedMail });
+//     if (!client) {
+//       console.log("Client not found for email:", decodedMail);
+//       return res.status(404).json({ message: "Client not found" });
+//     }
+//     res.json(client);
+//   } catch (error) {
+//     console.error("Error in fetching client:", error);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
 
-app.put("/client/:id", async (req, res) => {
+app.put("/client/:id", upload.single("photo"), async (req, res) => {
   try {
     const { id } = req.params;
     const { nom, email, prenom, numeroTel } = req.body;
 
-    await Client.findByIdAndUpdate(
-      { _id: id },
+    const updateData = {
+      nom,
+      email,
+      prenom,
+      numeroTel,
+    };
+
+    if (req.file) {
+      updateData.photo = req.file.filename;
+    }
+
+    const updatedClient = await Client.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
+    if (!updatedClient) {
+      return res.status(404).json({ message: "Client not found" });
+    }
+
+    // Generate a new token with updated information
+    const token = jwt.sign(
       {
-        nom,
-        email,
-        prenom,
-        numeroTel,
-      }
+        email: updatedClient.email,
+        id: updatedClient._id,
+      },
+      jwtSecret,
+      {}
     );
 
-    res.status(200).json({ message: "Client updated successfully" });
+    res.cookie("token", token).json(updatedClient);
   } catch (error) {
+    console.error("Error updating client:", error);
     res.status(500).json({ message: error.message });
   }
 });
 
-app.get("/prestataire/:mail", async (req, res) => {
-  console.log("API endpoint called with mail:", req.params.mail);
-  const { mail } = req.params;
-  const decodedMail = decodeURIComponent(mail);
-  console.log("Decoded email:", decodedMail); // Log the decoded email
+// app.get("/prestataire/:mail", async (req, res) => {
+//   console.log("API endpoint called with mail:", req.params.mail);
+//   const { mail } = req.params;
+//   const decodedMail = decodeURIComponent(mail);
+//   console.log("Decoded email:", decodedMail); // Log the decoded email
 
-  try {
-    const client = await Client.findOne({ email: decodedMail });
-    if (!client) {
-      console.log("Client not found for email:", decodedMail);
-      return res.status(404).json({ message: "Client not found" });
-    }
-    res.json(client);
-  } catch (error) {
-    console.error("Error in fetching client:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-});
+//   try {
+//     const prestataire = await Prestataire.findOne({ email: decodedMail });
+//     if (!prestataire) {
+//       console.log("Prestataire not found for email:", decodedMail);
+//       return res.status(404).json({ message: "Client not found" });
+//     }
+//     res.json(prestataire);
+//   } catch (error) {
+//     console.error("Error in fetching prestataire:", error);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
 
-app.put("/prestataire/:id", async (req, res) => {
+app.put("/prestataire/:id", upload.single("photo"), async (req, res) => {
   try {
     const { id } = req.params;
     const { nom, email, prenom, numeroTel, adresse } = req.body;
 
-    await Client.findByIdAndUpdate(
-      { _id: id },
+    const updateData = {
+      nom,
+      email,
+      prenom,
+      numeroTel,
+      adresse,
+    };
+
+    if (req.file) {
+      updateData.photo = req.file.filename;
+    }
+
+    const updatedPrestataire = await Prestataire.findByIdAndUpdate(
+      id,
+      updateData,
       {
-        nom,
-        email,
-        prenom,
-        numeroTel,
-        adresse,
+        new: true,
       }
     );
+    if (!updatedPrestataire) {
+      return res.status(404).json({ message: "Prestataire not found" });
+    }
 
-    res.status(200).json({ message: "Client updated successfully" });
+    // Generate a new token with updated information
+    const token = jwt.sign(
+      {
+        email: updatedPrestataire.email,
+        id: updatedPrestataire._id,
+      },
+      jwtSecret,
+      {}
+    );
+
+    res.cookie("token", token).json(updatedPrestataire);
   } catch (error) {
+    console.error("Error updating prestataire:", error);
     res.status(500).json({ message: error.message });
+  }
+});
+
+app.get("/booking/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    // Fetch the booking document first
+    const booking = await Booking.findById(id).populate("prestation");
+    if (!booking) {
+      return res.status(404).send("Booking not found");
+    }
+
+    // Optionally, directly return the populated prestation details
+    const prestation = booking.prestation;
+    if (!prestation) {
+      return res.status(404).send("Prestation not found for this booking");
+    }
+    res.json(prestation);
+  } catch (err) {
+    console.error("Error fetching booking details:", err);
+    res.status(500).send(err.message);
   }
 });
 

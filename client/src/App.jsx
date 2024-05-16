@@ -17,6 +17,7 @@ import RegisterPagePrestataire from "./pages/RegisterPagePrestataire.jsx";
 import ReservationPage from "./pages/ReservationPage.jsx";
 import ReservationsPage from "./pages/ReservationsPage.jsx";
 import EditProfile from "./pages/UpdateClient.jsx";
+import EditProfilePres from "./pages/UpdatePrestataire.jsx";
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -39,6 +40,10 @@ function App() {
             element={<ClientAccountPage />}
           />
           <Route path="/account-client/update/:id" element={<EditProfile />} />
+          <Route
+            path="/account-prestataire/update/:id"
+            element={<EditProfilePres />}
+          />
           <Route
             path="/account-prestataire/:id"
             element={<PrestataireProfilePage />}

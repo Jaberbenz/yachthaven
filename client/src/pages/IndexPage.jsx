@@ -10,9 +10,17 @@ const IndexPage = () => {
   const [location, setLocation] = useState("");
 
   useEffect(() => {
-    axios.get("/allprestations").then((response) => {
-      setPrestations(response.data);
-    });
+    const fetchPrestations = async () => {
+      try {
+        const response = await axios.get("/allprestations");
+        console.log("Prestations data:", response.data); // Vérifiez les données reçues
+        setPrestations(response.data);
+      } catch (error) {
+        console.error("Failed to fetch prestations:", error);
+      }
+    };
+
+    fetchPrestations();
   }, []);
 
   const settings = {
@@ -27,7 +35,6 @@ const IndexPage = () => {
 
   return (
     <div className="min-h-screen font-sans text-secondary">
-      {/* Adjusted background image for the header section */}
       <div className="relative min-h-[60vh]">
         <div
           className="absolute inset-0 bg-center bg-cover"
@@ -44,7 +51,6 @@ const IndexPage = () => {
           </p>
         </div>
 
-        {/* This container is positioned at the bottom of the relative parent */}
         <div className="absolute bottom-0 left-0 right-0 p-4">
           <h1 className="mb-4 text-2xl font-bold text-center text-white">
             RESERVEZ DES MAINTENANT
@@ -68,19 +74,20 @@ const IndexPage = () => {
       <div>
         <Slider {...settings}>
           {prestations.map((prestation) => (
-            <Card key={prestation.id} prestation={prestation} />
+            <Card key={prestation._id} prestation={prestation} />
           ))}
         </Slider>
       </div>
     </div>
   );
 };
+
 function NextArrow(props) {
   const { style, onClick } = props;
   return (
     <div
-      className="slick-arrow slick-next" // utilisez les classes slick pour positionnement de base
-      style={{ ...style, display: "block", right: "50px", top: "10rem" }} // ajuster la position à droite
+      className="slick-arrow slick-next"
+      style={{ ...style, display: "block", right: "50px", top: "10rem" }}
       onClick={onClick}
     >
       <div
@@ -107,35 +114,33 @@ function NextArrow(props) {
 function PrevArrow(props) {
   const { style, onClick } = props;
   return (
-    <div>
+    <div
+      className="slick-arrow slick-prev"
+      style={{
+        ...style,
+        display: "block",
+        left: "25px",
+        top: "10rem",
+        zIndex: 1,
+      }}
+      onClick={onClick}
+    >
       <div
-        className="slick-arrow slick-prev " // utilisez les classes slick pour positionnement de base
-        style={{
-          ...style,
-          display: "block",
-          left: "25px",
-          top: "10rem",
-          zIndex: 1,
-        }} // ajuster la position à gauche
-        onClick={onClick}
+        className="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow"
+        style={{ boxShadow: "0 5px 5px rgba(0,0,0,0.25)" }}
       >
-        <div
-          className="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow"
-          style={{ boxShadow: "0 5px 5px rgba(0,0,0,0.25)" }}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="gray"
+          className="w-6 h-6"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="gray"
-            className="w-6 h-6"
-          >
-            <path
-              fillRule="evenodd"
-              d="M11.03 3.97a.75.75 0 0 1 0 1.06l-6.22 6.22H21a.75.75 0 0 1 0 1.5H4.81l6.22 6.22a.75.75 0 1 1-1.06 1.06l-7.5-7.5a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 0 1 1.06 0Z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </div>
+          <path
+            fillRule="evenodd"
+            d="M11.03 3.97a.75.75 0 0 1 0 1.06l-6.22 6.22H21a.75.75 0 0 1 0 1.5H4.81l6.22 6.22a.75.75 0 1 1-1.06 1.06l-7.5-7.5a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 0 1 1.06 0Z"
+            clipRule="evenodd"
+          />
+        </svg>
       </div>
     </div>
   );

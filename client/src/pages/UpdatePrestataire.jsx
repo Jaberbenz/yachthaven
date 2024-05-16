@@ -1,43 +1,65 @@
-import { useState, useEffect } from "react";
+import { useState, useContext } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { UserContext } from "../UserContext";
 
 const EditProfilePres = () => {
-  const { id } = useParams();
-  const [client, setClient] = useState({
-    nom: "",
-    email: "",
-    prenom: "",
-    numeroTel: "",
+  const { user, setUser } = useContext(UserContext);
+  const [prestataire, setPrestataire] = useState({
+    nom: user.nom || "",
+    email: user.email || "",
+    prenom: user.prenom || "",
+    numeroTel: user.numeroTel || "",
+    numeroSiret: user.numeroSiret || "",
+    adresse: user.adresse || "",
   });
-
-  useEffect(() => {
-    const fetchClient = async () => {
-      const res = await axios.get(`/prestataire/${id}`);
-      console.log(res.data);
-      setClient(res.data);
-    };
-
-    fetchClient();
-  }, [id]);
+  const [profilePhoto, setProfilePhoto] = useState(null);
 
   const handleChange = (e) => {
-    setClient({ ...client, [e.target.name]: e.target.value });
+    setPrestataire({ ...prestataire, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axios.put(`/prestataire/${id}`, client);
+    const formData = new FormData();
+    formData.append("nom", prestataire.nom);
+    formData.append("email", prestataire.email);
+    formData.append("prenom", prestataire.prenom);
+    formData.append("numeroTel", prestataire.numeroTel);
+    formData.append("numeroSiret", prestataire.numeroSiret);
+    formData.append("adresse", prestataire.adresse);
+    if (profilePhoto) {
+      formData.append("photo", profilePhoto);
+    }
+
+    try {
+      console.log("Submitting update for prestataire:", prestataire);
+      const response = await axios.put(`/prestataire/${user._id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("Update response:", response.data);
+      setUser(response.data); // Update the user context with the new data
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <label>
-        Name:
+        Photo de profil:
+        <input
+          type="file"
+          onChange={(e) => setProfilePhoto(e.target.files[0])}
+        />
+      </label>
+      <label>
+        Nom:
         <input
           type="text"
           name="nom"
-          value={client.nom}
+          value={prestataire.nom}
           onChange={handleChange}
         />
       </label>
@@ -46,29 +68,47 @@ const EditProfilePres = () => {
         <input
           type="email"
           name="email"
-          value={client.email}
+          value={prestataire.email}
           onChange={handleChange}
         />
       </label>
       <label>
-        First Name:
+        Prénom:
         <input
           type="text"
           name="prenom"
-          value={client.prenom}
+          value={prestataire.prenom}
           onChange={handleChange}
         />
       </label>
       <label>
-        Phone Number:
+        Numéro de téléphone:
         <input
           type="tel"
           name="numeroTel"
-          value={client.numeroTel}
+          value={prestataire.numeroTel}
           onChange={handleChange}
         />
       </label>
-      <button type="submit">Update Profile</button>
+      <label>
+        Numéro SIRET:
+        <input
+          type="text"
+          name="numeroSiret"
+          value={prestataire.numeroSiret}
+          onChange={handleChange}
+        />
+      </label>
+      <label>
+        Adresse:
+        <input
+          type="text"
+          name="adresse"
+          value={prestataire.adresse}
+          onChange={handleChange}
+        />
+      </label>
+      <button type="submit">Mettre à jour le profil</button>
     </form>
   );
 };

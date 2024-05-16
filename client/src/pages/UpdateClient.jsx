@@ -1,25 +1,16 @@
-import { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useContext, useState } from "react";
+import { UserContext } from "../UserContext";
 
 const EditProfile = () => {
-  const { id } = useParams();
+  const { user, setUser } = useContext(UserContext);
   const [client, setClient] = useState({
-    nom: "",
-    email: "",
-    prenom: "",
-    numeroTel: "",
+    nom: user.nom || "",
+    email: user.email || "",
+    prenom: user.prenom || "",
+    numeroTel: user.numeroTel || "",
   });
-
-  useEffect(() => {
-    const fetchClient = async () => {
-      const res = await axios.get(`/client/${id}`);
-      console.log(res.data);
-      setClient(res.data);
-    };
-
-    fetchClient();
-  }, [id]);
+  const [profilePhoto, setProfilePhoto] = useState(null);
 
   const handleChange = (e) => {
     setClient({ ...client, [e.target.name]: e.target.value });
@@ -27,13 +18,40 @@ const EditProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axios.put(`/client/${id}`, client);
+    const formData = new FormData();
+    formData.append("nom", client.nom);
+    formData.append("email", client.email);
+    formData.append("prenom", client.prenom);
+    formData.append("numeroTel", client.numeroTel);
+    if (profilePhoto) {
+      formData.append("photo", profilePhoto);
+    }
+
+    try {
+      console.log("Submitting update for client:", client);
+      const response = await axios.put(`/client/${user._id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("Update response:", response.data);
+      setUser(response.data); // Update the user context with the new data
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <label>
-        Name:
+        Photo de profil:
+        <input
+          type="file"
+          onChange={(e) => setProfilePhoto(e.target.files[0])}
+        />
+      </label>
+      <label>
+        Nom:
         <input
           type="text"
           name="nom"
@@ -51,7 +69,7 @@ const EditProfile = () => {
         />
       </label>
       <label>
-        First Name:
+        Prénom:
         <input
           type="text"
           name="prenom"
@@ -60,7 +78,7 @@ const EditProfile = () => {
         />
       </label>
       <label>
-        Phone Number:
+        Numéro de téléphone:
         <input
           type="tel"
           name="numeroTel"
@@ -68,7 +86,7 @@ const EditProfile = () => {
           onChange={handleChange}
         />
       </label>
-      <button type="submit">Update Profile</button>
+      <button type="submit">Mettre à jour le profil</button>
     </form>
   );
 };
