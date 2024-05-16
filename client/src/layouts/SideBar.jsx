@@ -141,7 +141,24 @@ export default function SideBar({ isOpen, onClose }) {
           >
             {categories[category].map((item, idx) => (
               <div key={idx} className="py-3 text-gray-600">
-                {item}
+                {item === "Qui sommes-nous?" && (
+                  <Link to="/about-us" onClick={onClose}>
+                    {item}
+                  </Link>
+                )}
+                {item === "Nos missions" && (
+                  <Link to="/nos-missions" onClick={onClose}>
+                    {item}
+                  </Link>
+                )}
+                {item === "Nos engagements" && (
+                  <Link to="/commitments" onClick={onClose}>
+                    {item}
+                  </Link>
+                )}
+                {item !== "Qui sommes-nous?" &&
+                  item !== "Nos missions" &&
+                  item !== "Nos engagements" && <span>{item}</span>}
               </div>
             ))}
           </div>

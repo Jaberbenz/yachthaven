@@ -18,6 +18,9 @@ import ReservationPage from "./pages/ReservationPage.jsx";
 import ReservationsPage from "./pages/ReservationsPage.jsx";
 import EditProfile from "./pages/UpdateClient.jsx";
 import EditProfilePres from "./pages/UpdatePrestataire.jsx";
+import NosMissions from "./pages/NosMissions.jsx";
+import AboutUs from "./pages/AboutUs.jsx";
+import NosEngagements from "./pages/NosEngagement.jsx";
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -73,6 +76,9 @@ function App() {
             path="/account-client/bookings/:id"
             element={<ReservationPage />}
           />
+          <Route path="/nos-missions" element={<NosMissions />} />
+          <Route path="/about-us" element={<AboutUs />} />
+          <Route path="/commitments" element={<NosEngagements />} />
         </Route>
       </Routes>
     </UserContextProvider>
