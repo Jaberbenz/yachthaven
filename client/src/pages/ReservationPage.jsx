@@ -1,6 +1,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import Slider from "react-slick";
+import Card from "../layouts/Card";
+import "slick-carousel/slick/slick-theme.css";
+import "slick-carousel/slick/slick.css";
 
 export default function ReservationPage() {
   const { id } = useParams(); // ID de la réservation récupéré depuis l'URL
@@ -33,6 +37,42 @@ export default function ReservationPage() {
 
     fetchPrestationDetails();
   }, [id]);
+
+  var settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    centerMode: true,
+    centerPadding: "20px",
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          infinite: true,
+          dots: true,
+        },
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          initialSlide: 1,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -76,95 +116,103 @@ export default function ReservationPage() {
 
   return (
     <div className="p-5 mx-4 mt-4 bg-gray-200 border border-gray-200 shadow-lg rounded-2xl">
-      <h1 className="text-2xl font-semibold text-center">{prestation.titre}</h1>
-      <a
-        className="flex gap-1 my-4 font-semibold text-center underline"
-        target="_blank"
-        href={"https://maps.google.com/?q=" + prestation.adresse}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-6 h-6"
+      <div className="p-4 bg-white border border-gray-300 rounded-xl">
+        <h1 className="text-2xl font-semibold text-center">
+          {prestation.titre}
+        </h1>
+        <a
+          className="flex gap-1 my-4 font-semibold text-center underline"
+          target="_blank"
+          href={"https://maps.google.com/?q=" + prestation.adresse}
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-          />
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
-          />
-        </svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+            />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
+            />
+          </svg>
 
-        {prestation.adresse}
-      </a>
+          {prestation.adresse}
+        </a>
 
-      <div className="relative">
-        <div className="grid gap-2 grid-cols-[2fr_1fr] rounded-3xl overflow-hidden">
-          <div>
-            {prestation.photos?.[0] && (
-              <div>
-                <img
-                  className="object-cover aspect-square"
-                  src={"http://localhost:4000/uploads/" + prestation.photos[0]}
-                />
-              </div>
-            )}
-          </div>
-
-          <div className="grid ">
-            {prestation.photos?.[1] && (
-              <img
-                className="object-cover aspect-square"
-                src={"http://localhost:4000/uploads/" + prestation.photos[1]}
-              />
-            )}
-            <div className="overflow-hidden">
-              {prestation.photos?.[2] && (
-                <img
-                  className="relative object-cover aspect-square top-2"
-                  src={"http://localhost:4000/uploads/" + prestation.photos[2]}
-                />
+        <div className="relative">
+          <div className="grid gap-2 grid-cols-[2fr_1fr] rounded-3xl overflow-hidden">
+            <div>
+              {prestation.photos?.[0] && (
+                <div>
+                  <img
+                    className="object-cover aspect-square"
+                    src={
+                      "http://localhost:4000/uploads/" + prestation.photos[0]
+                    }
+                  />
+                </div>
               )}
             </div>
+
+            <div className="grid ">
+              {prestation.photos?.[1] && (
+                <img
+                  className="object-cover aspect-square"
+                  src={"http://localhost:4000/uploads/" + prestation.photos[1]}
+                />
+              )}
+              <div className="overflow-hidden">
+                {prestation.photos?.[2] && (
+                  <img
+                    className="relative object-cover aspect-square top-2"
+                    src={
+                      "http://localhost:4000/uploads/" + prestation.photos[2]
+                    }
+                  />
+                )}
+              </div>
+            </div>
           </div>
+          <button
+            onClick={() => setShowAllPhotos(true)}
+            className="absolute flex px-3 py-1 bg-white shadow shadow-md bottom-1 right-2 rounded-2xl shadow-gray-500"
+          >
+            Voir photos
+          </button>
         </div>
-        <button
-          onClick={() => setShowAllPhotos(true)}
-          className="absolute flex px-3 py-1 bg-white shadow shadow-md bottom-1 right-2 rounded-2xl shadow-gray-500"
-        >
-          Voir photos
-        </button>
-      </div>
-      <div className="my-4">
-        <h2 className="text-2xl font-semibold text-center">Description</h2>
-        {prestation.description}
-      </div>
-      <div className="max-w-2xl px-6 py-8 mx-auto mt-6 bg-white rounded-lg shadow-md">
-        {/* Information card */}
-        <div className="text-center">
-          <h3 className="mb-4 text-xl font-semibold text-gray-800">
-            Détails de la prestation
-          </h3>
-          <div className="space-y-3 text-gray-600">
-            <p>
-              <strong>Type de prestation:</strong> Restauration
-            </p>
-            <p>
-              <strong>Nombre de personnes:</strong> 5
-            </p>
-            <p>
-              <strong>Date:</strong> 14/05/2024
-            </p>
-            <p>
-              <strong>Horaires:</strong> 8:30 - 15:00
-            </p>
+        <div className="my-4">
+          <h2 className="text-2xl font-semibold text-center">Description</h2>
+          {prestation.description}
+        </div>
+        <div className="max-w-2xl px-6 py-8 mx-auto mt-6 bg-white rounded-lg shadow-md">
+          {/* Information card */}
+          <div className="text-center">
+            <h3 className="mb-4 text-xl font-semibold text-gray-800">
+              Détails de la prestation
+            </h3>
+            <div className="space-y-3 text-gray-600">
+              <p>
+                <strong>Type de prestation:</strong> Restauration
+              </p>
+              <p>
+                <strong>Nombre de personnes:</strong> 5
+              </p>
+              <p>
+                <strong>Date:</strong> 14/05/2024
+              </p>
+              <p>
+                <strong>Horaires:</strong> 8:30 - 15:00
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -173,24 +221,12 @@ export default function ReservationPage() {
         <h2 className="text-2xl font-semibold text-center">
           Autres prestations du même prestataire
         </h2>
-        <div className="grid gap-4 mt-4 md:grid-cols-2 lg:grid-cols-3">
-          {prestationsDuMemePrestataire.map((otherPrestation) => (
-            <Link
-              key={otherPrestation._id}
-              to={`/prestation/${otherPrestation._id}`}
-              className="p-4 bg-white rounded-lg shadow-md"
-            >
-              <img
-                className="object-cover w-full h-40 rounded-lg"
-                src={`http://localhost:4000/uploads/${otherPrestation.photos?.[0]}`}
-                alt={`Prestation ${otherPrestation.titre}`}
-              />
-              <h3 className="mt-2 text-lg font-bold">
-                {otherPrestation.titre}
-              </h3>
-              <p>{otherPrestation.description}</p>
-            </Link>
-          ))}
+        <div className="mt-4 max-h-[500px] overflow-hidden">
+          <Slider {...settings} className="mt-4">
+            {prestationsDuMemePrestataire.map((otherPrestation) => (
+              <Card key={otherPrestation._id} prestation={otherPrestation} />
+            ))}
+          </Slider>
         </div>
       </div>
     </div>
