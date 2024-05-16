@@ -5,12 +5,11 @@ import { UserContext } from "../UserContext";
 import axios from "axios";
 
 export default function SideBar({ isOpen, onClose }) {
-  const { ready, user, setUser } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
   const [openCategory, setOpenCategory] = useState(null);
   const navigate = useNavigate();
 
   const categories = {
-    Destinations: ["Antibes", "Monaco", "Cannes", "Saint Tropez"],
     Parcourir: ["Restauration", "Bien Être", "Loisirs", "Hôtellerie"],
     "About us": ["Qui sommes-nous?", "Nos missions", "Nos engagements"],
     Contact: ["saw@archtravels.com", "yachtavenue", "06.xxxxx"],

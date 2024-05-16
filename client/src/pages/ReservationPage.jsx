@@ -1,10 +1,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 export default function ReservationPage() {
   const { id } = useParams(); // ID de la réservation récupéré depuis l'URL
   const [prestation, setPrestation] = useState(null);
+  const [prestationsDuMemePrestataire, setPrestationsDuMemePrestataire] =
+    useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAllPhotos, setShowAllPhotos] = useState(false);
@@ -14,7 +16,14 @@ export default function ReservationPage() {
       try {
         const response = await axios.get(`/booking/${id}`);
         setPrestation(response.data);
+        console.log(response.data);
         setLoading(false);
+
+        const prestataireId = id;
+        const otherPrestationsResponse = await axios.get(
+          `/prestations-by-booking/${prestataireId}`
+        );
+        setPrestationsDuMemePrestataire(otherPrestationsResponse.data);
       } catch (err) {
         console.error("Error fetching prestation data:", err.message);
         setError(err.message);
@@ -23,7 +32,7 @@ export default function ReservationPage() {
     };
 
     fetchPrestationDetails();
-  }, [id]); // Ensure bookingId is in your dependency array if it might change
+  }, [id]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -157,6 +166,31 @@ export default function ReservationPage() {
               <strong>Horaires:</strong> 8:30 - 15:00
             </p>
           </div>
+        </div>
+      </div>
+      {/* Section pour les autres prestations du même prestataire */}
+      <div className="mt-6">
+        <h2 className="text-2xl font-semibold text-center">
+          Autres prestations du même prestataire
+        </h2>
+        <div className="grid gap-4 mt-4 md:grid-cols-2 lg:grid-cols-3">
+          {prestationsDuMemePrestataire.map((otherPrestation) => (
+            <Link
+              key={otherPrestation._id}
+              to={`/prestation/${otherPrestation._id}`}
+              className="p-4 bg-white rounded-lg shadow-md"
+            >
+              <img
+                className="object-cover w-full h-40 rounded-lg"
+                src={`http://localhost:4000/uploads/${otherPrestation.photos?.[0]}`}
+                alt={`Prestation ${otherPrestation.titre}`}
+              />
+              <h3 className="mt-2 text-lg font-bold">
+                {otherPrestation.titre}
+              </h3>
+              <p>{otherPrestation.description}</p>
+            </Link>
+          ))}
         </div>
       </div>
     </div>

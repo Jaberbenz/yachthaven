@@ -13,6 +13,7 @@ export default function PrestationFormPage() {
   const [description, setDescription] = useState("");
   const [perks, setPerks] = useState([]);
   const [extraInfo, setExtraInfo] = useState("");
+  const [categorie, setCategorie] = useState("");
   const [maxGuests, setMaxGuests] = useState(1);
   const [prix, setPrix] = useState(100);
   const [redirect, setRedirect] = useState(false);
@@ -44,6 +45,7 @@ export default function PrestationFormPage() {
       setExtraInfo(data.extraInfo);
       setMaxGuests(data.maxGuests);
       setPrix(data.prix);
+      setCategorie(data.categorie || "");
       setDisponibilities(data.disponibilities || []);
     });
   }, [id]);
@@ -86,6 +88,7 @@ export default function PrestationFormPage() {
       perks,
       extraInfo,
       maxGuests,
+      categorie,
       prix,
       disponibilities: cleanedDisponibilities,
     };
@@ -139,6 +142,18 @@ export default function PrestationFormPage() {
         <div className="grid grid-cols-2 gap-2 mx-2 mt-2">
           <Perks selected={perks} onChange={setPerks} />
         </div>
+        <h2 className="mx-2 mt-4 text-xl">Catégorie</h2>
+        <select
+          value={categorie}
+          onChange={(ev) => setCategorie(ev.target.value)}
+          className="block w-full px-3 py-2 text-base font-normal text-gray-700 transition ease-in-out bg-white bg-no-repeat border border-gray-300 border-solid rounded appearance-none form-select bg-clip-padding focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+        >
+          <option value="">Sélectionnez une catégorie</option>
+          <option value="hôtellerie">Hôtellerie</option>
+          <option value="loisirs">Loisirs</option>
+          <option value="bien-être">Bien-être</option>
+          <option value="restauration">Restauration</option>
+        </select>
         <h2 className="mx-2 mt-4 text-xl">Info supplémentaire</h2>
         <textarea
           value={extraInfo}

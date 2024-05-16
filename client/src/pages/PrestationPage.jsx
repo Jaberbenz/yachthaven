@@ -187,6 +187,10 @@ export default function PrestationPage() {
         <h2 className="text-2xl font-semibold">Description</h2>
         {prestation.description}
       </div>
+      <div className="my-4">
+        <h2 className="text-2xl font-semibold">Categorie</h2>
+        {prestation.categorie}
+      </div>
       <div className="flex mt-4 overflow-hidden rounded-2xl">
         <button
           className="px-4 py-2 mt-4 text-white bg-blue-500 rounded hover:bg-blue-700"
