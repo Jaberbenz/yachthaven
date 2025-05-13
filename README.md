@@ -99,7 +99,7 @@ YachtHaven est une application web MERN (MongoDB, Express, React, Node.js) perme
 1. Cloner le dépôt
 
 ```bash
-git clone [URL_DU_REPO]
+git clone https://github.com/Jaberbenz/yachthaven.git
 ```
 
 2. Installation des dépendances:
@@ -151,7 +151,3 @@ Les contributions sont les bienvenues ! N'hésitez pas à :
 3. Commit vos changements (`git commit -m 'Add some AmazingFeature'`)
 4. Push vers la branche (`git push origin feature/AmazingFeature`)
 5. Ouvrir une Pull Request
-
-## Licence
-
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
