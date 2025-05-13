@@ -1,8 +1,8 @@
-# YachtHaven - Plateforme de Réservation de Prestations pour Yachts
+# YachtHaven - Guide des Prestations Côtières pour Propriétaires de Yachts
 
 ## Aperçu du Projet
 
-YachtHaven est une application web MERN (MongoDB, Express, React, Node.js) permettant aux propriétaires de yachts et aux clients de réserver diverses prestations. L'application met en relation les prestataires de services et les clients dans le secteur du yachting.
+YachtHaven est une application web MERN (MongoDB, Express, React, Node.js) conçue pour les propriétaires de yachts naviguant le long des côtes. L'application permet de découvrir et réserver facilement les prestations disponibles dans les villes côtières (restaurants, spas, services de maintenance, etc.) en fonction de leur position actuelle. Elle met en relation les propriétaires de yachts avec les prestataires de services locaux pour une expérience de navigation optimale.
 
 ## Technologies Utilisées
 
@@ -138,9 +138,14 @@ npm run dev
 
 ## Cas d'Utilisation
 
-- Propriétaires de yachts cherchant des services (nettoyage, maintenance, catering, etc.)
-- Prestataires souhaitant proposer leurs services au marché du yachting
-- Gestion des rendez-vous et disponibilités pour les deux parties
+- Propriétaires de yachts cherchant des services locaux lors de leurs escales côtières :
+  - Restaurants et services de restauration
+  - Spas et services de bien-être
+  - Services de maintenance et réparation
+  - Activités touristiques et loisirs
+  - Services de ravitaillement
+- Prestataires de services côtiers souhaitant toucher une clientèle haut de gamme
+- Gestion des réservations et disponibilités en temps réel pour les deux parties
 
 ## Contribution
 
